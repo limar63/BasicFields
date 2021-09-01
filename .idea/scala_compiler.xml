@@ -4,7 +4,7 @@
     <profile name="sbt 1" modules="BasicFields">
       <option name="deprecationWarnings" value="true" />
       <plugins>
-        <plugin path="C:\Users\моя\AppData\Local\Coursier\Cache\v1\https\repo1.maven.org\maven2\org\scala-js\scalajs-compiler_2.13.6\1.7.0\scalajs-compiler_2.13.6-1.7.0.jar" />
+        <plugin path="C:\Users\lehal\AppData\Local\Coursier\Cache\v1\https\repo1.maven.org\maven2\org\scala-js\scalajs-compiler_2.13.6\1.7.0\scalajs-compiler_2.13.6-1.7.0.jar" />
       </plugins>
     </profile>
   </component>

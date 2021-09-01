@@ -11,26 +11,24 @@ object LaminarDocsParagraphs {
     val buttonState: Var[Boolean] = Var(true)
     val buttonVar: Var[String] = Var("Save")
     val errorVar: Var[String] = Var("")
+    val validityState: Signal[Boolean] = Signal.combineSeq(
+      nameVar.signal ::
+        surnameVar.signal ::
+        ageVar.signal ::
+        Nil).map(_.contains(""))
 
-    def inputMaker(inputText: String,
-                   nameVariable: Var[String],
-                   buttonVariable: Var[Boolean]): ReactiveHtmlElement[html.Div] =
-      div(inputText, span(
-        child.text <-- nameVariable,
-        hidden <-- buttonVariable),
-        input(typ := "text",
-          hidden <-- buttonVariable.signal.map(value => !value),
-          value <-- nameVariable,
-          inContext (thisNode =>
-            onChange.mapTo(thisNode.ref.value) --> nameVariable)
+    def inputMaker(inputText: String, nameVariable: Var[String], buttonVariable: Var[Boolean]): ReactiveHtmlElement[html.Div] =
+      div(inputText,
+        child <-- buttonVariable.signal.map(varValue =>
+          if (varValue)
+            input(typ := "text",
+              value <-- nameVariable,
+              onChange.mapToValue --> nameVariable)
+          else
+            span(child.text <-- nameVariable)
         ))
 
-    def compareIfAllEmpty(first: Var[String], second: Var[String],
-                          third: Var[String]): Boolean =
-      if ((first.now() == "")||(second.now() == "")||(third.now() == ""))
-        true
-      else
-        false
+    def compareIfAnyEmpty(varList: List[Var[String]]): Boolean = varList.map(_.now()).contains("")
 
     div(
       inputMaker("Name: ", nameVar, buttonState),
@@ -38,19 +36,17 @@ object LaminarDocsParagraphs {
       inputMaker("Age: ", ageVar, buttonState),
       button(child.text <-- buttonVar,
         onClick.mapTo(
-          if (compareIfAllEmpty(nameVar, surnameVar, ageVar))
+          if (compareIfAnyEmpty(List(nameVar, surnameVar, ageVar)))
             "ERROR: input field values are flawed"
           else "") --> errorVar,
         onClick.mapTo(
-          if (compareIfAllEmpty(nameVar, surnameVar, ageVar))
+          if (compareIfAnyEmpty(List(nameVar, surnameVar, ageVar)))
             buttonState.now()
           else !buttonState.now()) --> buttonState,
         onClick.mapTo(if (buttonState.now()) "Save" else "Edit") --> buttonVar),
       p(child.text <-- errorVar)
     )}
-
 }
-
 object App {
   val appContainer: dom.Element = dom.document.querySelector("#app-container")
 
